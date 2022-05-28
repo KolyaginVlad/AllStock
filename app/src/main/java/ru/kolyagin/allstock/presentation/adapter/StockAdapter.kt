@@ -1,5 +1,6 @@
 package ru.kolyagin.allstock.presentation.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,13 +40,11 @@ class StockAdapter : PagingDataAdapter<SymbolInfo, StockAdapter.StockViewHolder>
         getItem(position)?.let { holder.bind(it) }
     }
 
-    override fun onViewRecycled(holder: StockViewHolder) {
-        holder.unbind()
-    }
-
     inner class StockViewHolder(
         private val binding: StockItemBinding
     ) : RecyclerView.ViewHolder(binding.root) {
+
+        @SuppressLint("SetTextI18n")
         fun bind(data: SymbolInfo) {
             binding.apply {
                 description.text = data.description
@@ -54,7 +53,7 @@ class StockAdapter : PagingDataAdapter<SymbolInfo, StockAdapter.StockViewHolder>
                     loadIndicator.visibility = View.INVISIBLE
                     price.visibility = View.VISIBLE
                     if (data.price == 0.0){
-                        price.text = binding.root.context.getString(R.string.no_data)
+                        price.text = root.context.getString(R.string.no_data)
                     }
                     else {
                         price.text = "${data.price.toString()}  $"
@@ -66,7 +65,6 @@ class StockAdapter : PagingDataAdapter<SymbolInfo, StockAdapter.StockViewHolder>
             }
         }
 
-        fun unbind() {}
     }
 
     companion object {
