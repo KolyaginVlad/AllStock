@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AllStock</string>
+    <string name="error">Error</string>
+    <string name="no_data">No data</string>
+</resources>
