@@ -5,7 +5,7 @@ import ru.kolyagin.allstock.domain.model.StockDomainModel
 import ru.kolyagin.allstock.domain.model.SymbolDomainModel
 
 interface StockRepository {
-    suspend fun getListOfSymbols(): Result<List<SymbolDomainModel>>
+    suspend fun getListOfSymbols(exchange: String): Result<List<SymbolDomainModel>>
 
     fun openWebSocket(
         subscribeFlow: Flow<List<String>>,

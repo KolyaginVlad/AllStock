@@ -12,7 +12,8 @@ import ru.kolyagin.allstock.domain.model.SymbolDomainModel
 class SymbolPagingSourceFactory(
     private val symbolDao: SymbolDao,
     private val loadSize: Int,
-    private val filter: String
+    private val exchange: String,
+    private val filter: String,
 ) {
 
     fun create(): Flow<PagingData<SymbolEntity>> {
@@ -25,7 +26,7 @@ class SymbolPagingSourceFactory(
                 maxSize = 20
             ),
             pagingSourceFactory = {
-                symbolDao.pagingSource(filter)
+                symbolDao.pagingSource(filter, exchange)
             }
         ).flow
     }

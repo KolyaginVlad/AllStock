@@ -10,26 +10,38 @@ import kotlinx.coroutines.withContext
 import ru.kolyagin.allstock.Constants
 import ru.kolyagin.allstock.data.mapper.SymbolEntityMapper
 import ru.kolyagin.allstock.data.paging.SymbolPagingSourceFactory
+import ru.kolyagin.allstock.data.room.dao.ExchangeDao
 import ru.kolyagin.allstock.data.room.dao.SymbolDao
-import ru.kolyagin.allstock.domain.mapper.SymbolsDomainModelMapper
+import ru.kolyagin.allstock.data.room.entity.Exchange
+import ru.kolyagin.allstock.data.room.entity.ExchangeAndSymbols
 import ru.kolyagin.allstock.domain.model.SymbolDomainModel
 
 class SymbolRepositoryImpl(
     private val symbolDao: SymbolDao,
+    private val exchangeDao: ExchangeDao,
     private val mapper: SymbolEntityMapper,
 ) : SymbolRepository {
-    override suspend fun saveSymbolsData(list: List<SymbolDomainModel>) {
-        symbolDao.insertAll(list.map { mapper.mapFrom(it) })
+    override suspend fun saveSymbolsData(list: List<SymbolDomainModel>, exchange: String) {
+        val mappedList = list.map { mapper.mapFrom(it) }
+        symbolDao.insertAll(mappedList)
+        list.forEach {
+            exchangeDao.setNewSymbols(ExchangeAndSymbols(it.symbol, exchange))
+        }
     }
 
     override suspend fun getSymbolsPagingData(
+        exchange: String,
         filter: String,
         onGet: (PagingData<SymbolDomainModel>) -> Unit
     ) = withContext(Dispatchers.IO) {
-        SymbolPagingSourceFactory(symbolDao, Constants.LOAD_SIZE, filter).create().cachedIn(this)
+        SymbolPagingSourceFactory(symbolDao, Constants.LOAD_SIZE, filter, exchange).create().cachedIn(this)
             .onEach { pagingData ->
                 onGet(pagingData.map { mapper.mapTo(it) })
             }.cachedIn(this).launchIn(this)
+    }
+
+    override suspend fun getExchanges(): List<Exchange> = withContext(Dispatchers.IO) {
+        exchangeDao.getExchanges()
     }
 
     override suspend fun updateSymbol(symbol: String, checked: Boolean) {

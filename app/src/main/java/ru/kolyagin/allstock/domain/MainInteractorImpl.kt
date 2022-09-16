@@ -24,9 +24,9 @@ class MainInteractorImpl(
         this.out = out
     }
 
-    override suspend fun loadData(): Unit = withContext(Dispatchers.IO) {
-        val result = stockRepository.getListOfSymbols()
-        setResult(result)
+    override suspend fun loadData(exchange: String): Unit = withContext(Dispatchers.IO) {
+        val result = stockRepository.getListOfSymbols(exchange)
+        setResult(result, exchange)
     }
 
     override fun openWebSocket(
@@ -63,8 +63,8 @@ class MainInteractorImpl(
         }
     }
 
-    override suspend fun setFilter(filter: String) {
-        symbolRepository.getSymbolsPagingData(filter) { pagingData ->
+    override suspend fun setFilter(filter: String, exchange: String) {
+        symbolRepository.getSymbolsPagingData(filter, exchange) { pagingData ->
             out?.setPagingDataOfSymbols(pagingData.map { symbolsMapper.mapTo(it) })
         }
     }
@@ -73,13 +73,18 @@ class MainInteractorImpl(
         symbolRepository.updateSymbol(symbol, checked)
     }
 
+    override suspend fun getExchanges() {
+        out?.showExchanges(symbolRepository.getExchanges())
+    }
+
     private suspend fun setResult(
         result: Result<List<SymbolDomainModel>>,
+        exchange: String,
     ) {
         result.fold(
             onSuccess = { list ->
-                symbolRepository.saveSymbolsData(list)
-                setFilter("")
+                symbolRepository.saveSymbolsData(list, exchange)
+                setFilter("", exchange)
             },
             onFailure = {
                 out?.showError()

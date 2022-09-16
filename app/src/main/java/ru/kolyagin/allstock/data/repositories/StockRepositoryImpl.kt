@@ -25,8 +25,8 @@ class StockRepositoryImpl(
         return Result.success(stockPrice)
     }
 
-    override suspend fun getListOfSymbols(): Result<List<SymbolDomainModel>> {
-        val list = finnApi.getSymbols().safeAwait()?.body()?.map {
+    override suspend fun getListOfSymbols(exchange: String): Result<List<SymbolDomainModel>> {
+        val list = finnApi.getSymbols(exchange).safeAwait()?.body()?.map {
             mapper.mapTo(it)
         } ?: return Result.failure(Exception())
         return Result.success(list)

@@ -9,5 +9,5 @@ data class SymbolEntity(
     val displaySymbol: String,
     @PrimaryKey
     val symbol: String,
-    val isSaved: Boolean
+    val isSaved: Boolean,
 )

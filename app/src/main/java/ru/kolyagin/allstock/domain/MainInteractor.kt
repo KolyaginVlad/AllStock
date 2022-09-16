@@ -6,7 +6,7 @@ import ru.kolyagin.allstock.presentation.model.SymbolInfo
 interface MainInteractor {
     fun setOut(out: MainInteractorOut)
 
-    suspend fun loadData()
+    suspend fun loadData(exchange: String)
 
     fun openWebSocket(
         subscribeFlow: Flow<List<String>>,
@@ -17,7 +17,9 @@ interface MainInteractor {
 
     fun closeWebSocket()
 
-    suspend fun setFilter(filter: String)
+    suspend fun setFilter(filter: String, exchange: String)
 
     suspend fun onCheck(symbol: String, checked: Boolean)
+
+    suspend fun getExchanges()
 }
