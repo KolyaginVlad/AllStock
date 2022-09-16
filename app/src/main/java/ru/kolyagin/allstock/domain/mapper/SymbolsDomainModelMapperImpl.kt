@@ -9,13 +9,15 @@ class SymbolsDomainModelMapperImpl : SymbolsDomainModelMapper {
             from.description,
             from.displaySymbol,
             from.symbol,
-            null
+            null,
+            from.isSaved
         )
 
     override fun mapFrom(from: SymbolInfo): SymbolDomainModel =
         SymbolDomainModel(
             from.description,
             from.displaySymbol,
-            from.symbol
+            from.symbol,
+            from.isSaved
         )
 }

@@ -8,7 +8,8 @@ class SymbolsDataMapperImpl : SymbolsDataMapper {
         SymbolDomainModel(
             from.description,
             from.displaySymbol,
-            from.symbol
+            from.symbol,
+            false
         )
 
     override fun mapFrom(from: SymbolDomainModel): SymbolsData =

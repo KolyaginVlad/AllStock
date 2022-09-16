@@ -1,5 +1,6 @@
 package ru.kolyagin.allstock.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -37,9 +38,11 @@ class MainViewModel(
     ) = viewModelScope.launch {
         interactor.openWebSocket(subscribeFlow, unSubscribeFlow)
         interactor.loadData()
+        Log.d("MainViewModel", "onCreate")
     }
 
     fun loadInitialPrices(items: List<SymbolInfo>) = viewModelScope.launch {
+        Log.d("MainViewModel", "loadInitialPrices")
         interactor.loadInitialPrices(items)
     }
 
@@ -47,15 +50,25 @@ class MainViewModel(
         interactor.closeWebSocket()
     }
 
+    fun onCheck(data: SymbolInfo, isChecked: Boolean) {
+        viewModelScope.launch {
+            Log.d("MainViewModel", "onCheck $data $isChecked")
+            interactor.onCheck(data.symbol, isChecked)
+        }
+    }
+
     fun onFilterChanged(filter: String) = viewModelScope.launch {
+        Log.d("MainViewModel", "onFilterChanged")
         interactor.setFilter(filter)
     }
 
     override fun setPagingDataOfSymbols(list: PagingData<SymbolInfo>) = viewModelScope.launch {
+        Log.d("MainViewModel", "setPagingDataOfSymbols")
         listOfSymbolsChannel.send(list)
     }
 
     override fun updatePrice(info: List<StockInfo>) = viewModelScope.launch {
+        Log.d("MainViewModel", "updatePrice")
         info.forEach {
             priceChannel.send(it)
         }

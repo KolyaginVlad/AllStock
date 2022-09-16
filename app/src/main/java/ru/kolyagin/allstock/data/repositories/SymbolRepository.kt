@@ -12,5 +12,5 @@ interface SymbolRepository {
         onGet: (PagingData<SymbolDomainModel>) -> Unit
     ): Job
 
-    suspend fun removeAll()
+    suspend fun updateSymbol(symbol: String, checked: Boolean)
 }

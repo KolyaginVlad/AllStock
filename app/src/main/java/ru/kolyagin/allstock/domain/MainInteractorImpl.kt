@@ -69,12 +69,15 @@ class MainInteractorImpl(
         }
     }
 
+    override suspend fun onCheck(symbol: String, checked: Boolean) {
+        symbolRepository.updateSymbol(symbol, checked)
+    }
+
     private suspend fun setResult(
         result: Result<List<SymbolDomainModel>>,
     ) {
         result.fold(
             onSuccess = { list ->
-                symbolRepository.removeAll()
                 symbolRepository.saveSymbolsData(list)
                 setFilter("")
             },

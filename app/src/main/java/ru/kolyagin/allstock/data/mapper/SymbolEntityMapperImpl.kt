@@ -8,13 +8,15 @@ class SymbolEntityMapperImpl : SymbolEntityMapper {
         SymbolDomainModel(
             description = from.description,
             displaySymbol = from.displaySymbol,
-            symbol = from.symbol
+            symbol = from.symbol,
+            isSaved = from.isSaved
         )
 
     override fun mapFrom(from: SymbolDomainModel): SymbolEntity =
         SymbolEntity(
             description = from.description,
             displaySymbol = from.displaySymbol,
-            symbol = from.symbol
+            symbol = from.symbol,
+            isSaved = from.isSaved
         )
 }

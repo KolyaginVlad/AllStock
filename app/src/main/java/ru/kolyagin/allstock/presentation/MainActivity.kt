@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         viewModel.onCreate(subscribeChannel.receiveAsFlow(), unsubscribeChannel.receiveAsFlow())
+        adapter.onCheckListener = viewModel::onCheck
         setupViews()
         setupViewModel()
     }

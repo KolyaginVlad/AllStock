@@ -15,6 +15,8 @@ class StockAdapter : PagingDataAdapter<SymbolInfo, StockAdapter.StockViewHolder>
 
     private var layoutInflater: LayoutInflater? = null
 
+    var onCheckListener: ((SymbolInfo, Boolean) -> Unit)? = null
+
     fun updateItem(symbol: String, price: Double) {
         snapshot().items.find { it.symbol == symbol }?.let {
             val index = snapshot().items.indexOf(it)
@@ -40,6 +42,11 @@ class StockAdapter : PagingDataAdapter<SymbolInfo, StockAdapter.StockViewHolder>
         getItem(position)?.let { holder.bind(it) }
     }
 
+    override fun onViewRecycled(holder: StockViewHolder) {
+        super.onViewRecycled(holder)
+        holder.unbind()
+    }
+
     inner class StockViewHolder(
         private val binding: StockItemBinding
     ) : RecyclerView.ViewHolder(binding.root) {
@@ -49,6 +56,10 @@ class StockAdapter : PagingDataAdapter<SymbolInfo, StockAdapter.StockViewHolder>
             binding.apply {
                 description.text = data.description
                 symbol.text = data.displaySymbol
+                savedCheckBox.isChecked = data.isSaved
+                savedCheckBox.setOnCheckedChangeListener { button, isCheck ->
+                    onCheckListener?.invoke(data, isCheck)
+                }
                 if (data.price != null) {
                     loadIndicator.visibility = View.INVISIBLE
                     price.visibility = View.VISIBLE
@@ -63,6 +74,10 @@ class StockAdapter : PagingDataAdapter<SymbolInfo, StockAdapter.StockViewHolder>
                     price.visibility = View.INVISIBLE
                 }
             }
+        }
+
+        fun unbind() {
+            binding.savedCheckBox.setOnCheckedChangeListener { compoundButton, b ->  }
         }
 
     }

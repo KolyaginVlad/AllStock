@@ -18,4 +18,6 @@ interface MainInteractor {
     fun closeWebSocket()
 
     suspend fun setFilter(filter: String)
+
+    suspend fun onCheck(symbol: String, checked: Boolean)
 }

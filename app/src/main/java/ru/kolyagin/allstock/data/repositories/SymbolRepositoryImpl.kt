@@ -32,7 +32,7 @@ class SymbolRepositoryImpl(
             }.cachedIn(this).launchIn(this)
     }
 
-    override suspend fun removeAll() {
-        symbolDao.clearAll()
+    override suspend fun updateSymbol(symbol: String, checked: Boolean) {
+        symbolDao.updateSymbol(symbol, checked)
     }
 }
