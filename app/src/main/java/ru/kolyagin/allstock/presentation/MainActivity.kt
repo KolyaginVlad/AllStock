@@ -1,7 +1,10 @@
 package ru.kolyagin.allstock.presentation
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.widget.SearchView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
@@ -37,6 +40,30 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         viewModel.onDestroy()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+
+        val searchItem = menu?.findItem(R.id.action_search)
+        val searchView = searchItem?.actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+                if (!searchView.isIconified) {
+                    searchView.isIconified = true
+                }
+                searchItem.collapseActionView()
+                return false
+            }
+
+            override fun onQueryTextChange(p0: String?): Boolean {
+                viewModel.onFilterChanged(filter = p0.orEmpty())
+                return false
+            }
+
+        })
+
+        return super.onCreateOptionsMenu(menu)
     }
 
     private fun setupViews() {

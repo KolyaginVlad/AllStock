@@ -47,17 +47,21 @@ class MainViewModel(
         interactor.closeWebSocket()
     }
 
-    override fun setPagingDataOfSymbols(list: PagingData<SymbolInfo>): Job = viewModelScope.launch {
+    fun onFilterChanged(filter: String) = viewModelScope.launch {
+        interactor.setFilter(filter)
+    }
+
+    override fun setPagingDataOfSymbols(list: PagingData<SymbolInfo>) = viewModelScope.launch {
         listOfSymbolsChannel.send(list)
     }
 
-    override fun updatePrice(info: List<StockInfo>): Job = viewModelScope.launch {
+    override fun updatePrice(info: List<StockInfo>) = viewModelScope.launch {
         info.forEach {
             priceChannel.send(it)
         }
     }
 
-    override fun showError(): Job = viewModelScope.launch {
+    override fun showError() = viewModelScope.launch {
         eventChannel.send(Event.ErrorEvent)
     }
 

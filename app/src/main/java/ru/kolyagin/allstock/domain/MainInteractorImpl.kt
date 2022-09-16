@@ -1,16 +1,11 @@
 package ru.kolyagin.allstock.domain
 
-import androidx.paging.cachedIn
 import androidx.paging.map
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
-import ru.kolyagin.allstock.Constants
-import ru.kolyagin.allstock.data.paging.SymbolPagingSourceFactory
 import ru.kolyagin.allstock.data.repositories.StockRepository
+import ru.kolyagin.allstock.data.repositories.SymbolRepository
 import ru.kolyagin.allstock.domain.mapper.StockDomainModelMapper
 import ru.kolyagin.allstock.domain.mapper.SymbolsDomainModelMapper
 import ru.kolyagin.allstock.domain.model.SymbolDomainModel
@@ -19,6 +14,7 @@ import ru.kolyagin.allstock.presentation.model.SymbolInfo
 
 class MainInteractorImpl(
     private val stockRepository: StockRepository,
+    private val symbolRepository: SymbolRepository,
     private val symbolsMapper: SymbolsDomainModelMapper,
     private val stockMapper: StockDomainModelMapper,
 ) : MainInteractor {
@@ -30,7 +26,7 @@ class MainInteractorImpl(
 
     override suspend fun loadData(): Unit = withContext(Dispatchers.IO) {
         val result = stockRepository.getListOfSymbols()
-        setResult(result, this)
+        setResult(result)
     }
 
     override fun openWebSocket(
@@ -67,16 +63,20 @@ class MainInteractorImpl(
         }
     }
 
-    private fun setResult(
+    override suspend fun setFilter(filter: String) {
+        symbolRepository.getSymbolsPagingData(filter) { pagingData ->
+            out?.setPagingDataOfSymbols(pagingData.map { symbolsMapper.mapTo(it) })
+        }
+    }
+
+    private suspend fun setResult(
         result: Result<List<SymbolDomainModel>>,
-        scope: CoroutineScope
     ) {
         result.fold(
             onSuccess = { list ->
-                SymbolPagingSourceFactory(list, Constants.LOAD_SIZE).create().cachedIn(scope)
-                    .onEach { pagingData ->
-                        out?.setPagingDataOfSymbols(pagingData.map { symbolsMapper.mapTo(it) })
-                    }.cachedIn(scope).launchIn(scope)
+                symbolRepository.removeAll()
+                symbolRepository.saveSymbolsData(list)
+                setFilter("")
             },
             onFailure = {
                 out?.showError()

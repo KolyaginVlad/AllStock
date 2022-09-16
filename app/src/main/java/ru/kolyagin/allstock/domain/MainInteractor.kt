@@ -16,4 +16,6 @@ interface MainInteractor {
     suspend fun loadInitialPrices(items: List<SymbolInfo>)
 
     fun closeWebSocket()
+
+    suspend fun setFilter(filter: String)
 }

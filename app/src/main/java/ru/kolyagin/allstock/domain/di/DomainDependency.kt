@@ -9,7 +9,7 @@ import ru.kolyagin.allstock.domain.mapper.SymbolsDomainModelMapper
 import ru.kolyagin.allstock.domain.mapper.SymbolsDomainModelMapperImpl
 
 val domainModule = module {
-    factory<MainInteractor> { MainInteractorImpl(get(), get(), get()) }
+    factory<MainInteractor> { MainInteractorImpl(get(), get(), get(), get()) }
     single<SymbolsDomainModelMapper> { SymbolsDomainModelMapperImpl() }
     single<StockDomainModelMapper> { StockDomainModelMapperImpl() }
 }
